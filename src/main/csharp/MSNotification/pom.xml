@@ -51,6 +51,10 @@
               <sourceFile>Properties\Resources.resx</sourceFile>
               <name>Org.OpenEngSB.Connector.MSNotification.Properties.Resources</name>
             </embeddedResource>
+            <embeddedResource>
+              <sourceFile>Resources.resx</sourceFile>
+              <name>MSNotification.Resources</name>
+            </embeddedResource>
           </embeddedResources>
         </configuration>
       </plugin>

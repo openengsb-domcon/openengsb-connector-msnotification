@@ -1,0 +1,64 @@
+﻿<UserControl x:Class="Org.OpenEngSB.Connector.MSNotification.GUI.Controls.CustomBalloon"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             mc:Ignorable="d" 
+             d:DesignHeight="300" d:DesignWidth="300">
+    <Grid>
+        <Border BorderThickness="1" CornerRadius="3">
+            <Border.BorderBrush>
+                <LinearGradientBrush>
+                    <GradientStopCollection>
+                        <GradientStop Color="#9E1F1F" Offset="0"/>
+                        <GradientStop Color="#850000" Offset="1" />
+                    </GradientStopCollection>
+                </LinearGradientBrush>
+            </Border.BorderBrush>
+        </Border>
+        <Border BorderThickness="1" Margin="1" CornerRadius="3">
+            <Border.BorderBrush>
+                <LinearGradientBrush>
+                    <GradientStopCollection>
+                        <GradientStop Color="#D1A7A7" Offset="0"/>
+                        <GradientStop Color="#D17D7D" Offset="1" />
+                    </GradientStopCollection>
+                </LinearGradientBrush>
+            </Border.BorderBrush>
+            <Border.Background>
+                <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                    <GradientStopCollection>
+                        <GradientStop Color="#F2E6E6" Offset="0"/>
+                        <GradientStop Color="#E5C3C3" Offset="1" />
+                    </GradientStopCollection>
+                </LinearGradientBrush>
+            </Border.Background>
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Image Grid.RowSpan="2" Source="/gui/images/icons/openEngSB.ico" Height="35" Margin="5" />
+                <TextBlock Grid.Column="1" 
+                               FontWeight="Bold" 
+                               FontSize="14" 
+                               Text="{Binding subject}" 
+                               HorizontalAlignment="Center" 
+                               VerticalAlignment="Center" />
+                <TextBlock Grid.Column="1" 
+                               Grid.Row="1" 
+                               Grid.RowSpan="2" 
+                               Margin="0,0,5,0"
+                               MaxWidth="250"
+                               HorizontalAlignment="Center" 
+                               VerticalAlignment="Center" 
+                               TextTrimming="CharacterEllipsis"
+                               Text="{Binding message}"/>
+            </Grid>
+        </Border>
+    </Grid>
+</UserControl>

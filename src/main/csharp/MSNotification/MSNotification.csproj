@@ -50,6 +50,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
@@ -67,6 +68,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Page Include="GUI\Controls\CustomBalloon.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -74,6 +79,9 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="GUI\Controls\CustomBalloon.xaml.cs">
+      <DependentUpon>CustomBalloon.xaml</DependentUpon>
     </Compile>
     <Compile Include="GUI\Controls\NotifyIcon\BalloonIcon.cs" />
     <Compile Include="GUI\Controls\NotifyIcon\Internop\BalloonFlags.cs" />
@@ -112,6 +120,7 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <EmbeddedResource Include="GUI\Images\Resources.resx" />
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
@@ -127,6 +136,10 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="GUI\Controls\NotifyIcon\DefaultTrayIcon.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="GUI\Images\Icons\openEngSB.ico" />
+    <Resource Include="GUI\Images\Icons\openEngSB_info.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
