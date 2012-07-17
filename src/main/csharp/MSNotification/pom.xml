@@ -75,5 +75,11 @@
       <version>1.0.0-SNAPSHOT</version>
       <type>dotnet-library</type>
     </dependency>
+    <dependency>
+      <groupId>Org.OpenEngSB.Domain.Notification</groupId>
+      <artifactId>Org.OpenEngSB.Domain.Notification</artifactId>
+      <version>0.0.0.0</version>
+      <type>dotnet-library</type>
+    </dependency>
   </dependencies>
 </project>
