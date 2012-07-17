@@ -80,6 +80,9 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Common\ExtensionMethods.cs" />
+    <Compile Include="Common\SimpleEventArgs.cs" />
+    <Compile Include="Common\Singleton.cs" />
     <Compile Include="GUI\Controls\CustomBalloon.xaml.cs">
       <DependentUpon>CustomBalloon.xaml</DependentUpon>
     </Compile>
