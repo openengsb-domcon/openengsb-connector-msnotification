@@ -1,12 +1,15 @@
 ﻿namespace Org.OpenEngSB.Connector.MSNotification.Common
 {
     using log4net;
+    using Org.Openengsb.Loom.CSharp.Bridge.Implementation;
 
-    public abstract class Singleton<T>
-        where T : Singleton<T>, new()
+    public abstract class SingletonConnector<T> : RegistrationFunctions
+        where T : SingletonConnector<T>, new()
     {
         protected static readonly ILog _logger = LogManager.GetLogger(typeof(T));
         private static T _instance = null;
+
+        protected SingletonConnector() : base(_logger) { }
 
         public static T Instance
         {

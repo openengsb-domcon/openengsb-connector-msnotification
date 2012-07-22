@@ -6,14 +6,11 @@
     using System.IO;
     using System.Windows.Input;
     using System.Xml.Serialization;
-    using log4net;
     using Org.OpenEngSB.Connector.MSNotification.Common;
 
     public class Settings : Singleton<Settings>, INotifyPropertyChanged
     {
         private const string DefaultVersion = "3.0.0";
-
-        private static readonly ILog _logger = LogManager.GetLogger(typeof(Settings));
         private static readonly string _settingsPath;
 
         static Settings()
@@ -101,7 +98,7 @@
             }
             catch (Exception ex)
             {
-                _logger.Error("Failed to load settings.", ex);
+                _logger.Error("Failed to save settings.", ex);
             }
 
             _settingsChanged.Clear();

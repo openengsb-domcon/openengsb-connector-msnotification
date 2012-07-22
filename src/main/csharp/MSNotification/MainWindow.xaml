@@ -1,8 +1,40 @@
 ﻿<Window x:Class="Org.OpenEngSB.Connector.MSNotification.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="MainWindow" Height="350" Width="525">
+        xmlns:tb="clr-namespace:Hardcodet.Wpf.TaskbarNotification"
+        Title="MSNotification" Height="350" MinHeight="200" Width="525" MinWidth="350">
     <Grid>
-        
+        <tb:TaskbarIcon 
+            x:Name="NotifyIcon"
+            IconSource="/gui/images/icons/openEngSB.ico" Margin="0,0,0,2" />
+        <TabControl>
+            <TabItem Header="Notifications">
+
+            </TabItem>
+            <TabItem Header="Settings" Name="settingsView">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition MinWidth="175" Width="0.2*" />
+                        <ColumnDefinition MinWidth="50" Width="0.8*" />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Text="Destination (OpenEngSB-Url):" Margin="3" VerticalAlignment="Center" HorizontalAlignment="Right" />
+                    <TextBox Grid.Column="1" Text="{Binding Mode=TwoWay, Path=Destination, UpdateSourceTrigger=PropertyChanged}" Margin="3" />
+                    <CheckBox Grid.Row="1" Grid.Column="1" Content="I know what I am doing." Margin="3" HorizontalAlignment="Left" Name="chkVersionChange" IsChecked="False" />
+                    <TextBlock Grid.Row="2" Text="Version:" Margin="3" VerticalAlignment="Center" HorizontalAlignment="Right" />
+                    <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding Mode=TwoWay, Path=Version, UpdateSourceTrigger=PropertyChanged}" Margin="3" IsEnabled="{Binding ElementName=chkVersionChange, Path=IsChecked}" />
+
+                    <StackPanel Grid.Row="3" Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Bottom" HorizontalAlignment="Right">
+                        <Button Margin="5" Padding="5" Width="100" Command="Redo">Cancel</Button>
+                        <Button Margin="5" Padding="5" Width="100" Command="Save">Save</Button>
+                    </StackPanel>
+                </Grid>
+            </TabItem>
+        </TabControl>
     </Grid>
 </Window>

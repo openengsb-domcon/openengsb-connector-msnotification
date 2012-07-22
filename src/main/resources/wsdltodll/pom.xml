@@ -22,15 +22,9 @@
     <version>33</version>
   </parent>
 
-  <properties>
-    <openengsb.domain.version>3.0.0-SNAPSHOT</openengsb.domain.version>
-    <openengsb.domain.range>[3.0,4)</openengsb.domain.range>
-    <openengsb.framework.version>3.0.0-SNAPSHOT</openengsb.framework.version>
-  </properties>
-
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.openengsb.connector</groupId>
-  <artifactId>Org.OpenEngSB.Domain.Notification.dll</artifactId>
+  <artifactId>Org.OpenEngSB.Domain.NotificationInterfaces</artifactId>
   <packaging>pom</packaging>
   <version>1.0.0-SNAPSHOT</version>
 
@@ -97,7 +91,7 @@
 			<wsdl_location>${project.build.directory}/NotificationDomain.wsdl</wsdl_location>
 			<wsdl_location>${project.build.directory}/NotificationDomainEvents.wsdl</wsdl_location>
 		  </wsdl_locations>
-          <namespace>Org.OpenEngSB.Domain.Notification</namespace>
+          <namespace>Org.OpenEngSB.Domain.NotificationInterfaces</namespace>
         </configuration>
         <executions>
           <execution>
@@ -121,7 +115,7 @@
             <configuration>
               <artifacts>
                 <artifact>
-                  <file>target/Org.OpenEngSB.Domain.Notification.dll</file>
+                  <file>target/Org.OpenEngSB.Domain.NotificationInterfaces.dll</file>
                   <type>dll</type>
                 </artifact>
               </artifacts>
@@ -136,7 +130,7 @@
     <dependency>
       <groupId>org.openengsb.domain</groupId>
       <artifactId>org.openengsb.domain.notification</artifactId>
-      <version>${openengsb.domain.version}</version>
+      <version>3.0.0-SNAPSHOT</version>
       <classifier>NotificationDomain</classifier>
       <type>wsdl</type>
     </dependency>
