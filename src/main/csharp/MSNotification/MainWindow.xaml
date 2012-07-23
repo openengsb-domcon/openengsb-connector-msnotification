@@ -2,18 +2,72 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:tb="clr-namespace:Hardcodet.Wpf.TaskbarNotification"
-        Title="MSNotification" Height="350" MinHeight="200" Width="525" MinWidth="350">
+        Title="MSNotification" Height="350" MinHeight="200" Width="525" MinWidth="350"
+        Icon="/GUI/Images/Icons/openEngSB.ico">
+    <Window.CommandBindings>
+        <CommandBinding Command="Open" Executed="OpenCommand_Executed" CanExecute="OpenCommand_CanExecute" />
+    </Window.CommandBindings>
     <Grid>
         <tb:TaskbarIcon 
             x:Name="NotifyIcon"
             IconSource="/gui/images/icons/openEngSB.ico" Margin="0,0,0,2" />
         <TabControl>
             <TabItem Header="Notifications">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <ListView Name="lstNotifications" Margin="0,0,20,0">
+                        <ListView.View>
+                            <GridView>
+                                <GridView.Columns>
+                                    <GridViewColumn Header="To" DisplayMemberBinding="{Binding Path=recipient}" />
+                                    <GridViewColumn Header="Subject" DisplayMemberBinding="{Binding Path=subject}" />
+                                </GridView.Columns>
+                            </GridView>
+                        </ListView.View>
+                    </ListView>
+                    <GridSplitter Width="10"/>
+                    <Grid Grid.Column="1" DataContext="{Binding ElementName=lstNotifications, Path=SelectedItem}">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="70" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="*" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+                        <TextBlock Margin="3" Text="To:" HorizontalAlignment="Right" VerticalAlignment="Center" />
+                        <TextBox Margin="3" Grid.Column="1" IsReadOnly="True" Text="{Binding Path=recipient}" TextWrapping="Wrap" />
+                        
+                        <TextBlock Margin="3" Grid.Row="1" Text="Subject:" HorizontalAlignment="Right" VerticalAlignment="Center" />
+                        <TextBox Margin="3" Grid.Row="1" Grid.Column="1" IsReadOnly="True" Text="{Binding Path=subject}" TextWrapping="Wrap" />
 
+                        <TextBlock Margin="3" Grid.Row="2" Text="Message:" HorizontalAlignment="Right" VerticalAlignment="Center" />
+                        <TextBox Margin="3" Grid.Row="2" Grid.Column="1" IsReadOnly="True" Text="{Binding Path=message}" TextWrapping="Wrap" />
+
+                        <Button Margin="10" Grid.ColumnSpan="2" Grid.Row="3" Content="Open Attachment" Width="150" Padding="5" IsDefault="True" Name="btRunAttachment" Command="Open" CommandParameter="{Binding Path=attachments}">
+                            <Button.Style>
+                                <Style>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding Path=attachments}" Value="{x:Null}">
+                                            <Setter Property="FrameworkElement.Visibility" Value="Collapsed" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Button.Style>
+                        </Button>
+                    </Grid>
+                </Grid>
             </TabItem>
             <TabItem Header="Settings" Name="settingsView">
                 <Grid>
                     <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
@@ -23,13 +77,14 @@
                         <ColumnDefinition MinWidth="175" Width="0.2*" />
                         <ColumnDefinition MinWidth="50" Width="0.8*" />
                     </Grid.ColumnDefinitions>
-                    <TextBlock Text="Destination (OpenEngSB-Url):" Margin="3" VerticalAlignment="Center" HorizontalAlignment="Right" />
-                    <TextBox Grid.Column="1" Text="{Binding Mode=TwoWay, Path=Destination, UpdateSourceTrigger=PropertyChanged}" Margin="3" />
-                    <CheckBox Grid.Row="1" Grid.Column="1" Content="I know what I am doing." Margin="3" HorizontalAlignment="Left" Name="chkVersionChange" IsChecked="False" />
-                    <TextBlock Grid.Row="2" Text="Version:" Margin="3" VerticalAlignment="Center" HorizontalAlignment="Right" />
-                    <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding Mode=TwoWay, Path=Version, UpdateSourceTrigger=PropertyChanged}" Margin="3" IsEnabled="{Binding ElementName=chkVersionChange, Path=IsChecked}" />
+                    <CheckBox Grid.Column="1" Margin="3" IsChecked="{Binding Path=AutoStart}" Content="Autostart on Windows Startup" />
+                    <TextBlock Grid.Row="1" Text="Destination (OpenEngSB-Url):" Margin="3" VerticalAlignment="Center" HorizontalAlignment="Right" />
+                    <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding Mode=TwoWay, Path=Destination, UpdateSourceTrigger=PropertyChanged}" Margin="3" />
+                    <CheckBox Grid.Row="2" Grid.Column="1" Content="I know what I am doing." Margin="3" HorizontalAlignment="Left" Name="chkVersionChange" IsChecked="False" />
+                    <TextBlock Grid.Row="3" Text="Version:" Margin="3" VerticalAlignment="Center" HorizontalAlignment="Right" />
+                    <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding Mode=TwoWay, Path=Version, UpdateSourceTrigger=PropertyChanged}" Margin="3" IsEnabled="{Binding ElementName=chkVersionChange, Path=IsChecked}" />
 
-                    <StackPanel Grid.Row="3" Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Bottom" HorizontalAlignment="Right">
+                    <StackPanel Grid.Row="4" Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Bottom" HorizontalAlignment="Right">
                         <Button Margin="5" Padding="5" Width="100" Command="Redo">Cancel</Button>
                         <Button Margin="5" Padding="5" Width="100" Command="Save">Save</Button>
                     </StackPanel>

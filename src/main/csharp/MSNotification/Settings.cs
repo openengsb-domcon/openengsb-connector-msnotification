@@ -4,8 +4,10 @@
     using System.Collections.Generic;
     using System.ComponentModel;
     using System.IO;
+    using System.Linq;
     using System.Windows.Input;
     using System.Xml.Serialization;
+    using Microsoft.Win32;
     using Org.OpenEngSB.Connector.MSNotification.Common;
 
     public class Settings : Singleton<Settings>, INotifyPropertyChanged
@@ -50,6 +52,9 @@
 
         protected override void Initialize()
         {
+            _autoStartKey = Registry.CurrentUser.OpenSubKey(@"Software\Microsoft\Windows\CurrentVersion\Run", true);
+            _autoStart = (_autoStartKey.GetValue(_autoStartValue) != null);
+
             SaveBinding = new CommandBinding(ApplicationCommands.Save);
             SaveBinding.Executed += new ExecutedRoutedEventHandler(SaveBinding_Executed);
             SaveBinding.CanExecute += new CanExecuteRoutedEventHandler(SettingsBindings_CanExecute);
@@ -87,6 +92,18 @@
 
         void SaveBinding_Executed(object sender, ExecutedRoutedEventArgs e)
         {
+            if (_autoStart)
+            {
+                string commandLine = Environment.CommandLine;
+
+                if (!Environment.GetCommandLineArgs().Contains("/m"))
+                    commandLine += " /m";
+
+                _autoStartKey.SetValue(_autoStartValue, commandLine);
+            }
+            else
+                _autoStartKey.DeleteValue(_autoStartValue, false);
+
             try
             {
                 XmlSerializer ser = new XmlSerializer(GetType());
@@ -145,6 +162,33 @@
             }
         }
 
+        #region AutoStart in the registry
+
+        private const string _autoStartValue = "OpenEngSBWindowsService";
+        private RegistryKey _autoStartKey;
+
+        private bool _autoStart;
+
+        [XmlIgnore]
+        public bool AutoStart
+        {
+            get
+            {
+                return _autoStart;
+            }
+
+            set
+            {
+                if (_autoStart != value)
+                {
+                    PrePropertyChanged.SafeInvoike(this, "AutoStart");
+                    _autoStart = value;
+                    PropertyChanged.SafeInvoike(this, "AutoStart");
+                }
+            }
+        }
+
+        #endregion
 
         #region INotifyPropertyChanged Members
 

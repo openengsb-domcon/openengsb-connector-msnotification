@@ -104,7 +104,7 @@
 
                 using (var sw = new StreamWriter(_notificationsPath))
                 {
-                    ser.Serialize(sw, this);
+                    ser.Serialize(sw, Notifications);
                 }
             }
             catch (Exception ex)
