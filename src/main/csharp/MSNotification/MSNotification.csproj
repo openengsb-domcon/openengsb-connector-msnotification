@@ -76,9 +76,11 @@
     <Reference Include="fastJSON">
       <HintPath>.references\org.openengsb.wrapped.csharp\fastJSON-1.9.6_2\fastJSON.dll</HintPath>
     </Reference>
-    <Reference Include="Implementation, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL" />
-    <Reference Include="Interface">
-      <HintPath>.references\org.openengsb.loom.csharp.common.bridge\Interface-1.0.0-SNAPSHOT\Interface.dll</HintPath>
+    <Reference Include="Implementation, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\..\..\..\loom-csharp\bridge\Implementation\bin\Debug\Implementation.dll</HintPath>
+    </Reference>
+    <Reference Include="Interface, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\..\..\..\loom-csharp\bridge\Interface\bin\Debug\Interface.dll</HintPath>
     </Reference>
     <Reference Include="log4net">
       <HintPath>.references\org.openengsb.wrapped.csharp\log4net-1.2.11_2\log4net.dll</HintPath>
@@ -92,17 +94,14 @@
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
-    <Reference Include="System.Xml" />
-    <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="System.Xaml">
-      <RequiredTargetFramework>4.0</RequiredTargetFramework>
-    </Reference>
-    <Reference Include="WindowsBase" />
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
+    <Reference Include="System.Xaml" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
     <ApplicationDefinition Include="App.xaml">
@@ -175,6 +174,7 @@
     <EmbeddedResource Include="GUI\Images\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

@@ -1,4 +1,21 @@
-﻿namespace Org.OpenEngSB.Connector.MSNotification
+﻿/***
+ * Licensed to the Austrian Association for Software Tool Integration (AASTI)
+ * under one or more contributor license agreements. See the NOTICE file
+ * distributed with this work for additional information regarding copyright
+ * ownership. The AASTI licenses this file to you under the Apache License,
+ * Version 2.0 (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ ***/
+
+namespace Org.OpenEngSB.Connector.MSNotification
 {
     using System;
     using System.Diagnostics;
@@ -16,17 +33,16 @@
     /// </summary>
     public partial class MainWindow : Window
     {
-        private CustomBalloon _balloon = new CustomBalloon();
-
         public MainWindow()
         {
             Loaded += new RoutedEventHandler(MainWindow_Loaded);
             Closed += new EventHandler(MainWindow_Closed);
-            NotificationDomainConnector.Instance.Notified += new EventHandler<SimpleEventArgs<Notification>>(Instance_Notified);
-            _balloon.MouseLeftButtonDown += new MouseButtonEventHandler(_balloon_MouseLeftButtonDown);
             StateChanged += new EventHandler(MainWindow_StateChanged);
 
             InitializeComponent();
+
+            NotificationDomainConnector.Instance.SynchronizationDispatcher = this.Dispatcher;
+            NotificationDomainConnector.Instance.Notified += new EventHandler<SimpleEventArgs<Notification>>(Instance_Notified);
         }
 
         void MainWindow_StateChanged(object sender, EventArgs e)
@@ -55,11 +71,20 @@
 
         void Instance_Notified(object sender, SimpleEventArgs<Notification> e)
         {
-            _balloon.DataContext = e.Data;
-            NotifyIcon.ShowCustomBalloon(_balloon, PopupAnimation.Fade, 10000);
+            NotifyIcon.ShowCustomBalloon(CreateBalloon(e.Data), PopupAnimation.Fade, 10000);
 
             if (!IsActive)
                 NotifyIcon.Icon = GUI.Images.Resources.openEngSB_info;
+        }
+
+        private UIElement CreateBalloon(object dataContext)
+        {
+            CustomBalloon balloon = new CustomBalloon();
+
+            balloon.MouseLeftButtonDown += new MouseButtonEventHandler(_balloon_MouseLeftButtonDown);
+            balloon.DataContext = dataContext;
+
+            return balloon;
         }
 
         void MainWindow_Loaded(object sender, RoutedEventArgs e)
@@ -80,7 +105,17 @@
 
         private void OpenCommand_Executed(object sender, ExecutedRoutedEventArgs e)
         {
-            ProcessStartInfo psi = new ProcessStartInfo(e.Parameter.ToString());
+            string processName = e.Parameter.ToString();
+            string arguments = null;
+            int delimiterIndex = processName.IndexOf('\\');
+
+            if (delimiterIndex > 0)
+            {
+                arguments = processName.Substring(delimiterIndex + 1);
+                processName = processName.Substring(0, delimiterIndex);
+            }
+
+            ProcessStartInfo psi = new ProcessStartInfo(processName, arguments);
             Process p = new Process() { StartInfo = psi };
 
             p.Start();
@@ -88,7 +123,7 @@
 
         private void OpenCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
-            var param = e.Parameter as string;
+            string param = e.Parameter as string;
 
             e.CanExecute = !string.IsNullOrWhiteSpace(param);
             e.Handled = true;

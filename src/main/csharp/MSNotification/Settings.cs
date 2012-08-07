@@ -1,4 +1,21 @@
-﻿namespace Org.OpenEngSB.Connector.MSNotification
+﻿/***
+ * Licensed to the Austrian Association for Software Tool Integration (AASTI)
+ * under one or more contributor license agreements. See the NOTICE file
+ * distributed with this work for additional information regarding copyright
+ * ownership. The AASTI licenses this file to you under the Apache License,
+ * Version 2.0 (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ ***/
+
+namespace Org.OpenEngSB.Connector.MSNotification
 {
     using System;
     using System.Collections.Generic;
@@ -13,14 +30,20 @@
     public class Settings : Singleton<Settings>, INotifyPropertyChanged
     {
         private const string DefaultVersion = "3.0.0";
-        private static readonly string _settingsPath;
+        private const string autoStartValue = "OpenEngSBWindowsService";
+        private static readonly string settingsPath;
 
         static Settings()
         {
-            _settingsPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\MSNotification\settings.xml";
+            settingsPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\MSNotification\settings.xml";
         }
 
-        private IDictionary<string, object> _settingsChanged = new Dictionary<string, object>();
+        private IDictionary<string, object> settingsChanged = new Dictionary<string, object>();
+        private RegistryKey autoStartKey;
+
+        private bool _autoStart;
+        private string _version;
+        private string _destination;
 
         protected override void InitializeCorrectInstance(ref Settings instance)
         {
@@ -28,13 +51,13 @@
 
             try
             {
-                FileInfo fi = new FileInfo(_settingsPath);
+                FileInfo fi = new FileInfo(settingsPath);
                 if (!fi.Directory.Exists)
                     Directory.CreateDirectory(fi.DirectoryName);
 
                 XmlSerializer ser = new XmlSerializer(GetType());
 
-                using (var sr = new StreamReader(_settingsPath))
+                using (var sr = new StreamReader(settingsPath))
                 {
                     instance = (Settings)ser.Deserialize(sr);
                 }
@@ -42,18 +65,18 @@
             catch (FileNotFoundException fex)
             {
                 // file not found is ok, most probably no settings are there yet
-                _logger.Warn("Couldn't load the settings-file.", fex);
+                logger.Warn("Couldn't load the settings-file.", fex);
             }
             catch (Exception ex)
             {
-                _logger.Error("Failed to load settings.", ex);
+                logger.Error("Failed to load settings.", ex);
             }
         }
 
         protected override void Initialize()
         {
-            _autoStartKey = Registry.CurrentUser.OpenSubKey(@"Software\Microsoft\Windows\CurrentVersion\Run", true);
-            _autoStart = (_autoStartKey.GetValue(_autoStartValue) != null);
+            autoStartKey = Registry.CurrentUser.OpenSubKey(@"Software\Microsoft\Windows\CurrentVersion\Run", true);
+            _autoStart = (autoStartKey.GetValue(autoStartValue) != null);
 
             SaveBinding = new CommandBinding(ApplicationCommands.Save);
             SaveBinding.Executed += new ExecutedRoutedEventHandler(SaveBinding_Executed);
@@ -70,24 +93,24 @@
         {
             Type t = GetType();
 
-            foreach (var item in _settingsChanged)
+            foreach (var item in settingsChanged)
             {
                 t.GetProperty(item.Key).SetValue(this, item.Value, null);
             }
 
-            _settingsChanged.Clear();
+            settingsChanged.Clear();
         }
 
         void instance_PrePropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            if (!_settingsChanged.ContainsKey(e.PropertyName))
-                _settingsChanged.Add(e.PropertyName, GetType().GetProperty(e.PropertyName).GetValue(this, null));
+            if (!settingsChanged.ContainsKey(e.PropertyName))
+                settingsChanged.Add(e.PropertyName, GetType().GetProperty(e.PropertyName).GetValue(this, null));
         }
 
         void SettingsBindings_CanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
             if (!e.Handled)
-                e.CanExecute = _settingsChanged.Count > 0;
+                e.CanExecute = settingsChanged.Count > 0;
         }
 
         void SaveBinding_Executed(object sender, ExecutedRoutedEventArgs e)
@@ -99,26 +122,26 @@
                 if (!Environment.GetCommandLineArgs().Contains("/m"))
                     commandLine += " /m";
 
-                _autoStartKey.SetValue(_autoStartValue, commandLine);
+                autoStartKey.SetValue(autoStartValue, commandLine);
             }
             else
-                _autoStartKey.DeleteValue(_autoStartValue, false);
+                autoStartKey.DeleteValue(autoStartValue, false);
 
             try
             {
                 XmlSerializer ser = new XmlSerializer(GetType());
 
-                using (var sw = new StreamWriter(_settingsPath))
+                using (var sw = new StreamWriter(settingsPath))
                 {
                     ser.Serialize(sw, this);
                 }
             }
             catch (Exception ex)
             {
-                _logger.Error("Failed to save settings.", ex);
+                logger.Error("Failed to save settings.", ex);
             }
 
-            _settingsChanged.Clear();
+            settingsChanged.Clear();
         }
 
         [XmlIgnore]
@@ -126,8 +149,6 @@
 
         [XmlIgnore]
         public CommandBinding ResetBinding { get; private set; }
-
-        private string _version;
 
         public string Version
         {
@@ -145,8 +166,6 @@
         }
 
 
-        private string _destination;
-
         public string Destination
         {
             get { return _destination; }
@@ -163,11 +182,6 @@
         }
 
         #region AutoStart in the registry
-
-        private const string _autoStartValue = "OpenEngSBWindowsService";
-        private RegistryKey _autoStartKey;
-
-        private bool _autoStart;
 
         [XmlIgnore]
         public bool AutoStart

@@ -1,9 +1,27 @@
-﻿namespace Org.OpenEngSB.Connector.MSNotification.Connector
+﻿/***
+ * Licensed to the Austrian Association for Software Tool Integration (AASTI)
+ * under one or more contributor license agreements. See the NOTICE file
+ * distributed with this work for additional information regarding copyright
+ * ownership. The AASTI licenses this file to you under the Apache License,
+ * Version 2.0 (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ ***/
+
+namespace Org.OpenEngSB.Connector.MSNotification.Connector
 {
     using System;
     using System.Collections.ObjectModel;
     using System.IO;
     using System.Windows.Input;
+    using System.Windows.Threading;
     using System.Xml.Serialization;
     using Org.Openengsb.Loom.CSharp.Bridge.Implementation;
     using Org.Openengsb.Loom.CSharp.Bridge.Interface;
@@ -20,9 +38,12 @@
             _notificationsPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\MSNotification\notifications.xml";
         }
 
-        public event EventHandler<SimpleEventArgs<Notification>> Notified;
-        private IDomainFactory _factory;
+        private IDomainFactory factory;
+        private bool disposed = false;
 
+        public event EventHandler<SimpleEventArgs<Notification>> Notified;
+
+        public Dispatcher SynchronizationDispatcher { get; set; }
         public ObservableCollection<Notification> Notifications { get; private set; }
 
         protected override void Initialize()
@@ -47,11 +68,11 @@
             catch (FileNotFoundException fex)
             {
                 // file not found is ok, most probably no settings are there yet
-                _logger.Warn("Couldn't load the notifications-file.", fex);
+                logger.Warn("Couldn't load the notifications-file.", fex);
             }
             catch (Exception ex)
             {
-                _logger.Error("Failed to load notifications.", ex);
+                logger.Error("Failed to load notifications.", ex);
             }
 
             Settings.Instance.SaveBinding.Executed += new ExecutedRoutedEventHandler(SaveBinding_Executed);
@@ -67,14 +88,14 @@
         {
             try
             {
-                _factory = DomainFactoryProvider.GetDomainFactoryInstance(Settings.Instance.Version, Settings.Instance.Destination, this);
-                _factory.CreateDomainService(DomainName);
-                _factory.RegisterConnector(_factory.getServiceId(DomainName), DomainName);
+                factory = DomainFactoryProvider.GetDomainFactoryInstance(Settings.Instance.Version, Settings.Instance.Destination, this);
+                factory.CreateDomainService(DomainName);
+                factory.RegisterConnector(factory.getServiceId(DomainName), DomainName);
             }
             catch (Exception ex)
             {
-                _factory = null;
-                _logger.Error("Couldn't create factory with the current settings.", ex);
+                factory = null;
+                logger.Error("Couldn't create factory with the current settings.", ex);
             }
         }
 
@@ -82,6 +103,12 @@
 
         public void notify(Notification args0)
         {
+            if (SynchronizationDispatcher != null && !SynchronizationDispatcher.CheckAccess())
+            {
+                SynchronizationDispatcher.Invoke(new Action(() => notify(args0)), DispatcherPriority.DataBind);
+                return;
+            }
+
             Notifications.Insert(0, args0);
             Notified.SafeInvoke(this, new SimpleEventArgs<Notification>(args0));
         }
@@ -90,13 +117,11 @@
 
         #region IDisposable Members
 
-        private bool _disposed = false;
-
         public void Dispose()
         {
-            if (_disposed) return;
+            if (disposed) return;
 
-            _disposed = true;
+            disposed = true;
 
             try
             {
@@ -109,12 +134,12 @@
             }
             catch (Exception ex)
             {
-                _logger.Error("Failed to save notifications.", ex);
+                logger.Error("Failed to save notifications.", ex);
             }
 
-            _factory.UnRegisterConnector(DomainName);
-            _factory.DeleteDomainService(DomainName);
-            _factory.StopConnection(DomainName);
+            factory.UnRegisterConnector(DomainName);
+            factory.DeleteDomainService(DomainName);
+            factory.StopConnection(DomainName);
         }
 
         #endregion
