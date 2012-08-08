@@ -50,6 +50,7 @@ nbactions.xml
 *debug
 *bin
 *.references
+*.user
 
 #=================
 #maven-files
