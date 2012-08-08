@@ -52,8 +52,11 @@ namespace Org.OpenEngSB.Connector.MSNotification
             try
             {
                 FileInfo fi = new FileInfo(settingsPath);
+
                 if (!fi.Directory.Exists)
+                {
                     Directory.CreateDirectory(fi.DirectoryName);
+                }
 
                 XmlSerializer ser = new XmlSerializer(GetType());
 
@@ -104,13 +107,17 @@ namespace Org.OpenEngSB.Connector.MSNotification
         void instance_PrePropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             if (!settingsChanged.ContainsKey(e.PropertyName))
+            {
                 settingsChanged.Add(e.PropertyName, GetType().GetProperty(e.PropertyName).GetValue(this, null));
+            }
         }
 
         void SettingsBindings_CanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
             if (!e.Handled)
+            {
                 e.CanExecute = settingsChanged.Count > 0;
+            }
         }
 
         void SaveBinding_Executed(object sender, ExecutedRoutedEventArgs e)
@@ -120,7 +127,9 @@ namespace Org.OpenEngSB.Connector.MSNotification
                 string commandLine = Environment.CommandLine;
 
                 if (!Environment.GetCommandLineArgs().Contains("/m"))
+                {
                     commandLine += " /m";
+                }
 
                 autoStartKey.SetValue(autoStartValue, commandLine);
             }

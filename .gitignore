@@ -51,6 +51,7 @@ nbactions.xml
 *bin
 *.references
 *.user
+*.gpState
 
 #=================
 #maven-files

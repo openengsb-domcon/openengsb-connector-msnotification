@@ -55,8 +55,11 @@ namespace Org.OpenEngSB.Connector.MSNotification.Connector
             try
             {
                 FileInfo fi = new FileInfo(_notificationsPath);
+
                 if (!fi.Directory.Exists)
+                {
                     Directory.CreateDirectory(fi.DirectoryName);
+                }
 
                 XmlSerializer ser = new XmlSerializer(Notifications.GetType());
 

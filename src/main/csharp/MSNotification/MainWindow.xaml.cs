@@ -74,7 +74,9 @@ namespace Org.OpenEngSB.Connector.MSNotification
             NotifyIcon.ShowCustomBalloon(CreateBalloon(e.Data), PopupAnimation.Fade, 10000);
 
             if (!IsActive)
+            {
                 NotifyIcon.Icon = GUI.Images.Resources.openEngSB_info;
+            }
         }
 
         private UIElement CreateBalloon(object dataContext)
